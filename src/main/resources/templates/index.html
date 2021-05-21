@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+
+            background-image: url("https://7364-sdujingtao-5g5x4xcdad107ba4-1304845016.tcb.qcloud.la/images/QQ%E5%9B%BE%E7%89%8720210504234618.png?sign=36f58a1f73230bb9b7cd4f452f773d42&t=1620143246");
+            background-repeat: repeat-y;
+            /*background-size: cover;*/
+        }
+
+        form {
+            width: 600px;
+            text-align: center;
+            position: relative;
+            top: 100px;
+            left: 380px;
+            border: 3px solid white;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        input {
+            background-color: white;
+            border-radius: 4px;
+        }
+    </style>
+
+</head>
+<body>
+
+<form action="/CreateRoomController">
+    创建一个房间： <input type="text" placeholder="输入房间id" id="room" name="roomid">
+    <input type="submit" value="点击创建房间">
+    <span id="roomP"></span><br>
+
+</form>
+
+
+<form action="/EnterRoom" margin-top="20px">
+    进入一个房间：<input type="text" placeholder="请输入房间id" name="enterid">
+
+    <input type="submit" value="点击进入房间">
+</form>
+
+<script>
+    var response = null;
+    var obj = null;
+
+    function fun() {
+        var xhr = null;
+        if (window.XMLHttpRequest) { // 非IE5/6
+            xhr = new XMLHttpRequest(); //实例对象
+
+        } else { // IE5/6
+            xhr = new ActiveXObject('Microsoft.XMLHTTP');
+
+        }
+        ;
+        xhr.open('get', '/getRoomList', true); //生成不一样的url解决缓存问题
+        xhr.send(null); //get请求
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) { //请求完成
+                if (xhr.status == 200) { //ok
+                    response = xhr.responseText;
+                    obj = JSON.parse(response)
+                    console.log(obj);
+
+                }
+            }
+        }
+    }
+
+    fun();
+</script>
+<script>
+    var room_id = null;
+    document.getElementById("room").oninput = function () {
+        console.log(document.getElementById("room").value);
+        room_id = document.getElementById("room").value;
+        if (obj.includes(room_id)) {
+            document.getElementById("roomP").innerHTML = "此房间id已存在";
+            //document.getElementById("roomP").setAttribute("disabled", "true");
+        } else {
+            document.getElementById("roomP").innerHTML = "";
+            // document.getElementById("roomP").removeAttribute("disabled")
+        }
+    }
+</script>
+</body>
+</html>

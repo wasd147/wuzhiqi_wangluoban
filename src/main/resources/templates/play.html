@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>五子棋</title>
+    <style type="text/css">
+        @import "/css/play.css";
+
+        body {
+
+            background-image: url("https://7364-sdujingtao-5g5x4xcdad107ba4-1304845016.tcb.qcloud.la/images/QQ%E5%9B%BE%E7%89%8720210504234618.png?sign=36f58a1f73230bb9b7cd4f452f773d42&t=1620143246");
+            /*background-repeat: repeat;*/
+            background-size: cover;
+        }
+    </style>
+</head>
+
+<body>
+<script src="/js/fun.js"></script>
+<script>
+    var roomid = "[[${roomid}]]";
+    var color = "[[${color}]]";
+    var user = roomid + "_" + color;
+    console.log(user);
+    getSocket();
+    //得到user++++++++++++++++++++++++++++++++++++++++++++++
+
+</script>
+
+
+<!----------------------------------------------------------------------------->
+<span id="signal" style="color: #3193d4; size: 10px"></span>
+<canvas class="text">PK</canvas>
+<div class="gobang">
+
+    <canvas id="can" width="640" height="640">
+        您的浏览器不支持canvas
+    </canvas>
+</div>
+<script>
+    var text = document.getElementsByClassName('text');
+
+
+    //定义二维数组作为棋盘
+    var maps = new Array(16);
+    var len = maps.length;
+    // alert(len)
+    for (var i = 0; i < len; i++) {
+        maps[i] = new Array();
+        for (var j = 0; j < len; j++) {
+            maps[i][j] = 0;
+            // console.log(maps[i][j]);
+        }
+    }
+
+    //初始化棋子
+    var black = new Image();
+    var white = new Image();
+    var clientWidth = document.documentElement.clientWidth; //+++++++++++++
+    black.src = "/picture/black.png";
+    white.src = "/picture/white.png";
+    //棋盘初始化
+    var can = document.getElementById('can');
+    var ctx = can.getContext("2d"); //获取该canvas的2D绘图环境对象
+    ctx.strokeStyle = "#333";
+    for (var m = 0; m < len - 1; m++) {
+        for (var n = 0; n < len - 1; n++) {
+            ctx.strokeRect(m * 40 + 20, n * 40 + 20, 40, 40); //绘制40的小正方形
+        }
+    }
+    //绘制文字
+    var can1 = document.getElementsByClassName('text');
+    var ctx1 = can1[0].getContext("2d");
+
+    ctx1.beginPath();
+    ctx1.font = ("100px Georgia");
+    ctx1.fillStyle = "#F70707";
+    // ctx1.fillText("Hello",40,100);
+
+    var isBlack = true;
+
+    var enable;
+    var whiteIsIn = false;
+    if (color == "black") {
+        enable = true;
+    } else {
+        enable = false;
+    }
+    if (color == "white") {
+        whiteIsIn = true;
+    }
+    //下子
+    can.onclick = function play(e) {
+
+
+        console.log(e);
+
+        // alert(e.clientX);
+        //获取棋盘偏移量
+        var l = this.offsetLeft + 20;
+        var t = this.offsetTop + 20;
+        console.log(l, t);
+        //获取点击相对棋盘坐标
+        var x = e.clientX - l;
+        var y = e.clientY - t;
+        // alert(x);
+
+        //+++++++++++++++++++
+        var row, col, index = 0;
+
+        if (x % 40 < 20) {
+            col = parseInt(x / 40);
+        } else {
+            col = parseInt(x / 40) + 1;
+        }
+        row = y % 40 < 20 ? parseInt(y / 40) : parseInt(y / 40) + 1;
+        // alert(row+"行"+col+"行");  //第几列行第几列
+        //++++++++++++++++++++++++++++++++++++++++
+        if (maps[row][col] === 0) {
+            if (whiteIsIn) {
+                if (enable) {
+                    luozi(x, y);
+                    signalnotmine();
+                    enable = false;
+                    socket.send([x, y]);
+                } else {
+                    alert("等待对方落子")
+                }
+            } else {
+                alert("等待对方进入房间");
+            }
+        }
+
+
+    }
+
+    function whiteIsInfun() {
+        whiteIsIn = true;
+        console.log(whiteIsIn)
+    }
+
+    function signalmine() {
+        document.getElementById("signal").innerText = "请您落子";
+    }
+
+    function signalnotmine() {
+        document.getElementById("signal").innerText = "请等待对方落子";
+    }
+</script>
+<script src="/js/luozi.js"></script>
+
+</body>
+
+</html>
